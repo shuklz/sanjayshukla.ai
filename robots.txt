@@ -1,0 +1,5 @@
+# sanjayshukla.ai — publicly viewable, but kept out of search until ready.
+# To let search engines index the site: change "Disallow: /" to "Allow: /"
+# AND remove the <meta name="robots" content="noindex..."> line in index.html.
+User-agent: *
+Disallow: /

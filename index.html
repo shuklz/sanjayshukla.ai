@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Publicly viewable but kept out of search until ready. Delete the next line to allow indexing. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Robo-Claude — an open-source desktop robot, rebuilt locally with Claude · Sanjay Shukla</title>
+<meta name="description" content="Robo-Claude: an open-source, Kickstarter-born M5Stack desktop robot — decoded and rebuilt on our own terms, with its brain running locally on Claude. Voice, face-ID, documents and ~20 household integrations, all self-hosted. A build log by Sanjay Shukla.">
+<meta name="author" content="Sanjay Shukla">
+
+<!-- Open Graph / social -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Robo-Claude — an open-source robot, rebuilt locally on our own terms">
+<meta property="og:description" content="An open-source, Kickstarter-born M5Stack desktop robot — decoded and given a local brain with Claude. Voice, face recognition, documents and ~20 household integrations — no vendor lock-in.">
+<meta property="og:url" content="https://sanjayshukla.ai/">
+<meta property="og:image" content="https://sanjayshukla.ai/media/social-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://sanjayshukla.ai/">
+<link rel="stylesheet" href="/styles.css?v=1">
+</head>
+
+<body>
+
+<a class="skip" href="#what">Skip to content</a>
+
+<!-- ============================ MOBILE TOP BAR ============================ -->
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="Sanjay Shukla — home">
+    <span class="brand__mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="26" height="26"><line x1="32" y1="10" x2="32" y2="18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="9" r="2.6" fill="var(--teal)"/><rect x="15" y="18" width="34" height="28" rx="8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="25.5" cy="31" r="3.2" fill="currentColor"/><circle cx="38.5" cy="31" r="3.2" fill="currentColor"/><path d="M25 39 q7 4.5 14 0" fill="none" stroke="var(--teal)" stroke-width="3" stroke-linecap="round"/></svg>
+    </span>
+    <span class="brand__text"><b>Sanjay Shukla</b><span class="brand__sub">Local-first AI</span></span>
+  </a>
+  <button class="rail-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</header>
+
+<!-- ============================ LEFT RAIL ============================ -->
+<aside class="rail" id="rail" aria-label="Site navigation">
+  <a class="brand brand--rail" href="#top" aria-label="Sanjay Shukla — home">
+    <span class="brand__mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="26" height="26"><line x1="32" y1="10" x2="32" y2="18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="9" r="2.6" fill="var(--teal)"/><rect x="15" y="18" width="34" height="28" rx="8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="25.5" cy="31" r="3.2" fill="currentColor"/><circle cx="38.5" cy="31" r="3.2" fill="currentColor"/><path d="M25 39 q7 4.5 14 0" fill="none" stroke="var(--teal)" stroke-width="3" stroke-linecap="round"/></svg>
+    </span>
+    <span class="brand__text"><b>Sanjay Shukla</b><span class="brand__sub">Local-first AI</span></span>
+  </a>
+
+  <nav class="rail__proj" aria-label="AI Projects">
+    <p class="rail__label">AI Projects</p>
+    <a class="proj proj--active" href="#top" aria-current="page">
+      <span class="proj__dot"></span>
+      <span class="proj__name">Robo-Claude</span>
+      <span class="proj__meta">Built · live</span>
+    </a>
+    <span class="proj proj--soon">
+      <span class="proj__dot"></span>
+      <span class="proj__name">ChatWithDocs</span>
+      <span class="proj__meta">Coming soon</span>
+    </span>
+    <span class="proj proj--soon">
+      <span class="proj__dot"></span>
+      <span class="proj__name">LLM Web Search</span>
+      <span class="proj__meta">Coming soon</span>
+    </span>
+    <span class="proj proj--soon">
+      <span class="proj__dot"></span>
+      <span class="proj__name">Digital Avatar Studio</span>
+      <span class="proj__meta">Coming soon</span>
+    </span>
+  </nav>
+
+  <nav class="rail__sections" aria-label="On this page">
+    <p class="rail__label">On this page</p>
+    <a href="#what">Overview</a>
+    <a href="#freed">Freed</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#systems">Subsystems</a>
+    <a href="#stack">Stack</a>
+    <a href="#status">Status</a>
+  </nav>
+
+  <div class="rail__foot">
+    <span class="live" title="Running locally at home"><span class="live__dot"></span>running&nbsp;locally</span>
+    <a class="rail__contact" href="mailto:shuklz@gmail.com">shuklz@gmail.com</a>
+  </div>
+</aside>
+<div class="rail__scrim" id="railScrim" aria-hidden="true"></div>
+
+<div class="shell" id="top">
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="hero__glow" aria-hidden="true"></div>
+
+  <div class="hero__inner">
+    <p class="kicker">A local-first AI project · build log</p>
+    <h1 class="hero__title">Robo&#8288;-&#8288;Claude</h1>
+    <p class="hero__lede">
+      An <b>open-source</b> desktop robot, born on Kickstarter and built to be opened up.
+      So we did exactly that — decoded it and moved its brain in-house, local and private,
+      with Claude. No vendor account, no phone-home, no black box. Voice, face recognition,
+      documents and roughly twenty household integrations, all on hardware we own.
+    </p>
+
+    <div class="hero__cta">
+      <a class="btn btn--primary" href="#freed">Read the story ↓</a>
+      <button class="btn btn--ghost" data-video>▶ Watch the demo</button>
+    </div>
+
+    <dl class="stats" aria-label="At a glance">
+      <div><dt>0</dt><dd>vendor-cloud LLM calls</dd></div>
+      <div><dt>~20</dt><dd>household integrations</dd></div>
+      <div><dt>~40</dt><dd>on-device tools</dd></div>
+      <div><dt>EN&nbsp;·&nbsp;<span lang="hi">हिंदी</span></dt><dd>bilingual voice</dd></div>
+    </dl>
+  </div>
+
+  <figure class="hero__shot shot" style="--ar:4/3">
+    <div class="shot__media">
+      <img src="/media/hero.jpg" alt="Robo-Claude, the customised M5Stack desktop robot, at home" loading="eager"
+           onload="this.closest('.shot__media').classList.add('is-ready')">
+      <div class="shot__ph"><span class="shot__no">SHOT&nbsp;01</span><span class="shot__hint">Hero — the robot on its shelf, ¾ angle, Claude face on screen, warm low light</span></div>
+    </div>
+  </figure>
+
+  <a class="hero__scroll" href="#what" aria-label="Scroll to overview"><span></span></a>
+</section>
+
+<main>
+
+<!-- ============================ WHAT IS IT ============================ -->
+<section id="what" class="section" data-reveal>
+  <div class="wrap">
+    <p class="eyebrow">01 — The hardware</p>
+    <h2 class="h2">What is an M5&#8288;Stack&#8288;Chan?</h2>
+    <div class="lead-grid">
+      <p class="lead">
+        The starting point is an <b>M5Stack CoreS3</b> — a palm-sized developer board built
+        around an <b>ESP32-S3</b>, wrapped in the open-source <b>“StackChan”</b> robot form
+        factor: a little servo-driven head with a bright screen for a face. It ships as the
+        <b>AI Desktop Robot Kit (K151-R)</b>: two servos for a nod-and-turn neck, a 2-inch
+        touch LCD, a camera, a mic, a speaker and a Li-ion cell.
+      </p>
+      <p class="lead lead--dim">
+        Out of the box it is charming — and completely dependent on its maker's servers to
+        think, hear and speak. Everything below is about changing that: keeping the body,
+        replacing the brain, and doing it without giving up an inch of privacy.
+      </p>
+    </div>
+
+    <div class="specs">
+      <div class="spec"><span class="spec__k">Compute</span><span class="spec__v">M5Stack CoreS3 · ESP32-S3, dual-core Xtensa LX7 @ 240&nbsp;MHz, PSRAM</span></div>
+      <div class="spec"><span class="spec__k">Screen</span><span class="spec__v">2″ IPS LCD · 320×240 · capacitive touch</span></div>
+      <div class="spec"><span class="spec__k">Motion</span><span class="spec__v">2× servos · yaw ≈ ±90°, pitch clamped ~0–88°</span></div>
+      <div class="spec"><span class="spec__k">Camera</span><span class="spec__v">2&nbsp;MP OV2640 (used for face recognition)</span></div>
+      <div class="spec"><span class="spec__k">Audio</span><span class="spec__v">MEMS mic in · 1&nbsp;W mono speaker out</span></div>
+      <div class="spec"><span class="spec__k">Radio</span><span class="spec__v">Wi-Fi 2.4&nbsp;GHz · ESP-NOW remote (JoyC + StickC-Plus)</span></div>
+      <div class="spec"><span class="spec__k">Storage</span><span class="spec__v">microSD (FAT32) · NVS config in flash</span></div>
+      <div class="spec"><span class="spec__k">Power</span><span class="spec__v">USB-C · 550&nbsp;mAh Li-ion (kept on mains in use)</span></div>
+    </div>
+
+    <figure class="shot" style="--ar:4/3">
+      <div class="shot__media">
+        <img src="/media/device.jpg" alt="The M5Stack CoreS3 in its StackChan shell" loading="lazy"
+             onload="this.closest('.shot__media').classList.add('is-ready')">
+        <div class="shot__ph"><span class="shot__no">SHOT&nbsp;02</span><span class="shot__hint">The device — a clean shot of the CoreS3 in its StackChan shell</span></div>
+      </div>
+      <figcaption>The body we kept: a 2-inch screen for a face, two servos for a neck. Only what runs inside it changed.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================ FREED FROM THE CLOUD ============================ -->
+<section id="freed" class="section section--alt" data-reveal>
+  <div class="wrap">
+    <p class="eyebrow">02 — The story</p>
+    <h2 class="h2">Open by design, local by choice</h2>
+    <p class="lead">
+      Here's what makes this fair game: the robot is <b>open source</b>. It was crowdfunded on
+      Kickstarter and built from the start to be opened up, studied and run however its owner
+      likes — that's the whole point of it. Out of the box it leans on <b>XiaoZhi</b>, the
+      maker's cloud: it thinks with an Alibaba <b>Qwen</b> model, speaks with a cloud voice, and
+      checks in with the maker's servers at boot — a perfectly good default, and entirely
+      optional. So we asked the obvious question — <i>why route the whole household through
+      someone else's cloud when the same robot can run on our own terms?</i> — and moved the
+      brain home.
+    </p>
+
+    <div class="beforeafter">
+      <article class="ba ba--before">
+        <header><span class="ba__tag">Factory · default</span><h3>The maker's cloud path</h3></header>
+        <ul class="ba__list">
+          <li><span>Brain</span>Alibaba <b>Qwen</b>, in the maker's cloud</li>
+          <li><span>Voice</span>Cloud speech-to-text and text-to-speech</li>
+          <li><span>Boot</span>OTA check against <code>xiaozhi.me</code></li>
+          <li><span>Link</span>Device dials <code>ws://api.xiaozhi.me</code></li>
+          <li><span>Privacy</span>By default, audio + identity go to the cloud</li>
+        </ul>
+      </article>
+
+      <div class="ba__arrow" aria-hidden="true">
+        <span>flash&nbsp;+ rebuild</span>
+        <svg viewBox="0 0 80 24" width="80" height="24"><path d="M2 12 H70" stroke="currentColor" stroke-width="2" fill="none"/><path d="M64 5 L74 12 L64 19" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <article class="ba ba--after">
+        <header><span class="ba__tag ba__tag--good">Ours · on our terms</span><h3>A brain we host</h3></header>
+        <ul class="ba__list">
+          <li><span>Brain</span><b>Claude</b>, driven over MCP, on our own account</li>
+          <li><span>Voice</span><b>Local</b> Whisper transcription; owned TTS</li>
+          <li><span>Boot</span>Local OTA stub on <code>:8090</code> — no phone-home</li>
+          <li><span>Link</span>Device dials a <b>local</b> gateway on the LAN</li>
+          <li><span>Privacy</span>Speech + faces stay on hardware we own</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="honesty">
+      <b>Kept honest:</b> “local-first” here means <i>no vendor lock-in and no phone-home</i> — not
+      that a data-centre is never touched. The reasoning brain is <b>Claude</b>, running under
+      Sanjay's own Anthropic plan (not a bundled black-box model); speech is transcribed <b>on the
+      Mac</b> with <code>faster-whisper</code>; the spoken voice uses a swappable TTS engine
+      (Microsoft <code>edge-tts</code>, or a fully-local VOICEVOX engine). Every household
+      integration talks to a <b>local device or a keyless public API</b> — never a vendor account.
+    </p>
+
+    <div class="split">
+      <figure class="shot" style="--ar:4/5">
+        <div class="shot__media">
+          <img src="/media/before-activation.jpg" alt="The M5Stack robot showing its stock factory StackChan face" loading="lazy"
+               onload="this.closest('.shot__media').classList.add('is-ready')">
+          <div class="shot__ph"><span class="shot__no">SHOT&nbsp;03</span><span class="shot__hint">Before — the factory 激活设备 activation screen / XiaoZhi UI on the device</span></div>
+        </div>
+        <figcaption>Before: the stock StackChan face, on the maker's default cloud setup.</figcaption>
+      </figure>
+      <figure class="shot" style="--ar:4/5">
+        <div class="shot__media">
+          <img src="/media/flashing.jpg" alt="Flashing the stackchan-mcp firmware over USB-C" loading="lazy"
+               onload="this.closest('.shot__media').classList.add('is-ready')">
+          <div class="shot__ph"><span class="shot__no">SHOT&nbsp;04</span><span class="shot__hint">The reflash — device on USB-C, terminal showing esptool writing firmware</span></div>
+        </div>
+        <figcaption>After: <code>stackchan-mcp</code> firmware flashed, factory image backed up first.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Stage timeline -->
+    <h3 class="h3">How the switch happened, in stages</h3>
+    <ol class="timeline">
+      <li class="tl tl--done">
+        <span class="tl__badge">Stage 0</span>
+        <div class="tl__body"><h4>Stub-mode brain</h4><p>A local MCP server with the tool surface built and testable <em>before the box even arrived</em> — every data source returns stub text until wired.</p></div>
+      </li>
+      <li class="tl tl--done">
+        <span class="tl__badge">Stage 1</span>
+        <div class="tl__body"><h4>De-clouding the boot</h4><p>A local OTA stub answers the boot-time check the device would otherwise send to <code>xiaozhi.me</code>, so it can come alive without checking in with anyone.</p></div>
+      </li>
+      <li class="tl tl--done">
+        <span class="tl__badge">Stage 2</span>
+        <div class="tl__body"><h4>Bridge proof-of-concept</h4><p>An MCP pipe dialled <em>out</em> into the maker's access point to inject local tools — enough to prove the idea. Superseded by the reflash.</p></div>
+      </li>
+      <li class="tl tl--active">
+        <span class="tl__badge">Stage 3 · now</span>
+        <div class="tl__body"><h4>Claude as the brain</h4><p>Factory agent replaced with the open <code>stackchan-mcp</code> firmware; the device dials a local gateway; <b>Claude</b> reasons over the tools and drives the robot. Logs read <code>ESP32&nbsp;ready … tools=40</code>.</p></div>
+      </li>
+      <li class="tl tl--next">
+        <span class="tl__badge">Stage 4 · next</span>
+        <div class="tl__body"><h4>Always-on, off the laptop</h4><p>Move the gateway onto an always-on home box so the robot lives independent of any one Mac. Deferred — today's setup already does the job.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================ ARCHITECTURE ============================ -->
+<section id="architecture" class="section" data-reveal>
+  <div class="wrap">
+    <p class="eyebrow">03 — How it works</p>
+    <h2 class="h2">The robot is a peripheral. Claude is the brain.</h2>
+    <p class="lead">
+      One idea holds the whole system together: the little robot is just <b>hands, eyes, ears and a
+      mouth</b>. The thinking happens on the Mac, where Claude sees a menu of tools — move the head,
+      take a photo, read a document, check the calendar, turn on a light — and decides what to do.
+      Touch the screen, speak, and the signal makes this round trip:
+    </p>
+
+    <div class="flow">
+      <div class="flow__node flow__node--device">
+        <span class="flow__ic">🤖</span>
+        <h4>Device · ESP32-S3</h4>
+        <p>Touch to talk. Streams Opus audio up a WebSocket; receives servo, LED and speech back down the same socket.</p>
+        <span class="flow__port">ws :8765</span>
+      </div>
+      <div class="flow__link" aria-hidden="true"><span>audio ↑ · commands ↓</span></div>
+
+      <div class="flow__node flow__node--gw">
+        <span class="flow__ic">🔌</span>
+        <h4>Gateway · stackchan-mcp</h4>
+        <p>The bridge on the LAN. WebSocket to the robot on one side; a Model-Context-Protocol tool server to Claude on the other.</p>
+        <span class="flow__port">mcp :8080</span>
+      </div>
+      <div class="flow__link" aria-hidden="true"><span>MCP tools</span></div>
+
+      <div class="flow__node flow__node--brain">
+        <span class="flow__ic">🧠</span>
+        <h4>Brain · on the Mac</h4>
+        <p><code>faster-whisper</code> transcribes locally → <b>Claude</b> reasons &amp; picks tools → <code>edge-tts</code> speaks the answer back.</p>
+        <span class="flow__port">voice :8791</span>
+      </div>
+      <div class="flow__link" aria-hidden="true"><span>local · keyless</span></div>
+
+      <div class="flow__node flow__node--home">
+        <span class="flow__ic">🏠</span>
+        <h4>The household</h4>
+        <p>~20 adapters: Hue &amp; Sonos on the LAN; calendar, email, sports, space, news, flights, weather, markets, Discord.</p>
+        <span class="flow__port">local + APIs</span>
+      </div>
+    </div>
+
+    <div class="ports">
+      <h3 class="h3">Every moving part has an address</h3>
+      <table class="ports__table">
+        <thead><tr><th>Service</th><th>Port</th><th>Protocol</th><th>Job</th></tr></thead>
+        <tbody>
+          <tr><td>Device link</td><td><code>8765</code></td><td>WebSocket</td><td>Robot ⇄ gateway (audio, motion, LEDs)</td></tr>
+          <tr><td>MCP gateway</td><td><code>8080</code></td><td>HTTP / streamable</td><td>Tool surface Claude drives</td></tr>
+          <tr><td>Voice loop</td><td><code>8791</code></td><td>HTTP</td><td>Audio in → transcribe → answer</td></tr>
+          <tr><td>Control panel</td><td><code>8799</code></td><td>HTTP (Flask)</td><td>The web UI you configure it from</td></tr>
+          <tr><td>OTA stub</td><td><code>8090</code></td><td>HTTP</td><td>Answers the boot check locally</td></tr>
+          <tr><td>Room audio</td><td><code>8793</code></td><td>HTTP</td><td>Serves announcements to Sonos</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure class="shot" style="--ar:16/9">
+      <div class="shot__media">
+        <img src="/media/panel-overview.png" alt="The Robo-Claude control panel, main tab" loading="lazy"
+             onload="this.closest('.shot__media').classList.add('is-ready')">
+        <div class="shot__ph"><span class="shot__no">SHOT&nbsp;05</span><span class="shot__hint">Control panel — the main Robo-Control tab at http://127.0.0.1:8799, live status showing</span></div>
+      </div>
+      <figcaption>The whole thing is run from one local web panel — start/stop, live status, and every setting below.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================ SUBSYSTEMS ============================ -->
+<section id="systems" class="section section--alt" data-reveal>
+  <div class="wrap">
+    <p class="eyebrow">04 — What we customised</p>
+    <h2 class="h2">Every area, rebuilt</h2>
+    <p class="lead">
+      Each capability below was added deliberately, kept narrow, and made to fail honestly — if the
+      robot doesn't know, it says so rather than guessing. Here is each area, in detail.
+    </p>
+
+    <div class="sys">
+
+      <!-- Voice -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">A</span><h3>Voice — touch, transcribe, think, speak</h3></div>
+        <p>Touch the screen and a red dot appears; ask your question; touch again to end. The device
+        streams Opus audio to the gateway, which hands it to the voice loop on the Mac.
+        <code>faster-whisper</code> (the <em>small</em> model, for Hindi support) transcribes it
+        <b>locally</b>; Claude reasons over the tools and answers; the reply is spoken back and the
+        LEDs go dark, ready for the next one.</p>
+        <ul class="card__facts">
+          <li><b>No wake word — by design.</b> Whisper hallucinates sentences from silence, so a touch is the trigger. Explicit beats a robot that answers an empty room.</li>
+          <li><b>Bilingual.</b> English vs. <span lang="hi">हिंदी</span> is detected per-utterance against a threshold fitted to real recordings.</li>
+          <li><b>LED grammar.</b> Dark = ready · blue = listening / thinking / speaking · magenta = the answer is routed to a room speaker instead.</li>
+        </ul>
+        <p class="card__stack"><span>faster-whisper</span><span>claude -p</span><span>edge-tts / VOICEVOX</span><span>ffmpeg · Opus</span><span>WebSocket</span></p>
+        <figure class="shot shot--inset" style="--ar:1/1">
+          <div class="shot__media">
+            <img src="/media/voice-leds.jpg" alt="The robot listening, LEDs lit blue" loading="lazy"
+                 onload="this.closest('.shot__media').classList.add('is-ready')">
+            <div class="shot__ph"><span class="shot__no">SHOT&nbsp;06</span><span class="shot__hint">Close-up — robot mid-answer, base LEDs glowing blue</span></div>
+          </div>
+        </figure>
+      </article>
+
+      <!-- Faces -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">B</span><h3>Face recognition &amp; identity</h3></div>
+        <p>The onboard camera lets the robot know <em>who is asking</em>. Enrolment captures a handful
+        of photos and stores a 128-dimension face embedding; on every question it detects the face,
+        computes a vector and matches it by cosine similarity against the enrolled set. Recognition is
+        what makes <b>“email me my report”</b> safe — the recipient is resolved from the recognised
+        person, never dictated aloud.</p>
+        <ul class="card__facts">
+          <li><b>On-device vision models.</b> YuNet detects the face, SFace embeds it — both run on the CPU through OpenCV's DNN module. No cloud vision API.</li>
+          <li><b>Identity as a gate.</b> Below the match threshold, the robot simply says it isn't sure who you are, and refuses to send anything.</li>
+          <li><b>Private by construction.</b> Embeddings and email addresses live in a local file that never leaves the Mac and is never committed.</li>
+        </ul>
+        <p class="card__stack"><span>OpenCV DNN</span><span>YuNet</span><span>SFace · 128-D</span><span>cosine match</span></p>
+      </article>
+
+      <!-- Documents -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">C</span><h3>Documents — even the scanned ones</h3></div>
+        <p>Point the robot at a folder of documents and ask about them. It keeps a lightweight
+        <b>index</b> (names, paths, dates) so lookups are instant, and only ever reads inside folders
+        you've explicitly allowed. Text PDFs are read directly. The hard case — a <b>photographed</b>
+        lab report with zero extractable text — is detected, <b>rasterised page-by-page at full
+        resolution</b>, with the page rotation read from the PDF stream rather than guessed, then read
+        as an image.</p>
+        <ul class="card__facts">
+          <li><b>Scoped, not root.</b> Searches walk only enrolled document roots — never your whole disk.</li>
+          <li><b>Honest about limits.</b> “Showing 8 of 12” — it never pretends a truncated list is complete, and never answers about a file it didn't actually open.</li>
+          <li><b>iCloud-aware.</b> If a file is a placeholder that hasn't downloaded, it fetches it or says it can't — no silent blanks.</li>
+        </ul>
+        <p class="card__stack"><span>pypdf</span><span>Pillow (RAQM)</span><span>index-first search</span></p>
+        <figure class="shot shot--inset" style="--ar:16/9">
+          <div class="shot__media">
+            <img src="/media/doc-read.png" alt="A scanned PDF being read and explained" loading="lazy"
+                 onload="this.closest('.shot__media').classList.add('is-ready')">
+            <div class="shot__ph"><span class="shot__no">SHOT&nbsp;07</span><span class="shot__hint">Doc Access tab, or a report being read aloud — screen + robot (redact any personal data)</span></div>
+          </div>
+        </figure>
+      </article>
+
+      <!-- Email -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">D</span><h3>Email out — with no “to” field</h3></div>
+        <p>The robot can email you a document it just found. Deliberately, the send tool has <b>no
+        recipient parameter</b>: the address comes from the recognised face, so a misheard name can't
+        send your medical report to a stranger. Delivery is plain Gmail SMTP with a revocable
+        app-specific password kept out of every log.</p>
+        <ul class="card__facts">
+          <li><b>Find first, email second.</b> “Find my last report” stands alone; emailing it is an optional follow-on, never automatic.</li>
+          <li><b>Attachment scope-checked.</b> Only files from allowed document roots can be attached.</li>
+        </ul>
+        <p class="card__stack"><span>smtplib</span><span>Gmail app-password</span><span>identity-gated</span></p>
+      </article>
+
+      <!-- Home automation -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">E</span><h3>Home automation — lights &amp; sound, all local</h3></div>
+        <p>Two integrations, both talking straight to devices on the LAN with no manufacturer cloud
+        account. <b>Philips Hue</b> lights are driven over the bridge's local CLIP v2 API (paired once,
+        with a revocable key) — on/off, brightness, colour, temperature. <b>Sonos</b> speakers are
+        found by UPnP and used for room audio: say “play it in the living room” and the answer is
+        streamed to that room instead of the robot's 1&nbsp;W speaker, with the LEDs turning magenta
+        to show it.</p>
+        <ul class="card__facts">
+          <li><b>No accounts.</b> Hue via local bridge, Sonos via local UPnP — nothing goes through Philips or Sonos servers.</li>
+          <li><b>Apple Music, catalogue-only.</b> Search returns track IDs; playback goes out to Sonos — no user login.</li>
+        </ul>
+        <p class="card__stack"><span>Hue CLIP v2</span><span>SoCo · UPnP</span><span>httpx</span></p>
+        <figure class="shot shot--inset" style="--ar:16/9">
+          <div class="shot__media">
+            <img src="/media/hue-sonos.jpg" alt="Room lights and speaker the robot controls" loading="lazy"
+                 onload="this.closest('.shot__media').classList.add('is-ready')">
+            <div class="shot__ph"><span class="shot__no">SHOT&nbsp;08</span><span class="shot__hint">Room shot — the robot with a Hue lamp + Sonos speaker it controls, evening light</span></div>
+          </div>
+        </figure>
+      </article>
+
+      <!-- Calendar -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">F</span><h3>Calendar &amp; reminders</h3></div>
+        <p>The robot reads an <b>iCloud</b> calendar over CalDAV, read-only, with an app-specific
+        password. It looks ~90 days ahead, lets iCloud expand repeating events, and answers from a
+        cache refreshed every few minutes — telling you when the cache is stale rather than pretending
+        it's live. Reminders are separate and set <b>only from the panel</b>, never by voice, because a
+        misheard time is a silent failure.</p>
+        <p class="card__stack"><span>caldav</span><span>read-only</span><span>90-day lookahead</span></p>
+      </article>
+
+      <!-- The Watchers -->
+      <article class="card card--wide" data-reveal>
+        <div class="card__head"><span class="card__num">G</span><h3>The watchers — a household news desk</h3></div>
+        <p>A family of adapters that keep an eye on the world and fold it into a spoken briefing. They
+        share one rule above all: <b>never invent.</b> A launch with no confirmed time is “some time in
+        October”, not a made-up hour; a news story is <b>quoted from the headline the newsroom wrote,
+        and the newsroom is named</b> — no confident summary that could get a fact about a war wrong,
+        spoken aloud in a house with a 90-year-old in it.</p>
+        <div class="watchers">
+          <div class="watch"><h5>🏏 Sport</h5><p>Cricket &amp; football scores, wickets, overs and upcoming fixtures from ESPN — live cadence during a match, idle otherwise.</p></div>
+          <div class="watch"><h5>🚀 Space</h5><p>Launches, the Space Station, eclipses and storms from NORAD, NASA, ESA, JAXA, ISRO — sky events filtered to what's visible locally.</p></div>
+          <div class="watch"><h5>📰 News</h5><p>17 keyless newsrooms across 7 regions, ranked by cross-region agreement, capped at three stories, headlines quoted verbatim.</p></div>
+          <div class="watch"><h5>✈️ Flights</h5><p>Live position, gate and status for followed flights — AeroDataBox where keyed, keyless ADS-B, airport weather and US ground delays otherwise.</p></div>
+          <div class="watch"><h5>🌍 Alerts</h5><p>Earthquakes, cyclones, floods and volcanoes from USGS and NASA EONET for watched cities — alert on threshold, silent when stale.</p></div>
+          <div class="watch"><h5>📈 Markets</h5><p>Stock closes and threshold alerts via yfinance — reports <em>finished</em> sessions, and never says “today” across a timezone line.</p></div>
+        </div>
+        <p class="card__stack"><span>keyless / owned APIs</span><span>cached &amp; stale-aware</span><span>never fabricates</span></p>
+        <figure class="shot shot--inset" style="--ar:16/9">
+          <div class="shot__media">
+            <img src="/media/panel-watchers.png" alt="A watcher tab in the control panel" loading="lazy"
+                 onload="this.closest('.shot__media').classList.add('is-ready')">
+            <div class="shot__ph"><span class="shot__no">SHOT&nbsp;09</span><span class="shot__hint">A watcher tab — News, Space or Sport in the panel, showing followed items</span></div>
+          </div>
+        </figure>
+      </article>
+
+      <!-- Discord -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">H</span><h3>Discord — the Minecraft watch</h3></div>
+        <p>A small bot watches a Discord channel and flags matching messages — used to catch the family
+        Minecraft server starting up or crashing. It reads with a proper bot token and the Message
+        Content intent, so bodies actually arrive, and matches them against rules set in the panel.</p>
+        <p class="card__stack"><span>discord.py</span><span>message-content intent</span></p>
+      </article>
+
+      <!-- Avatar -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">I</span><h3>Avatar &amp; expressions</h3></div>
+        <p>The face on the screen is Claude's, rendered from a template and pushed into the device's
+        PSRAM — which survives a power cycle, so it stays after a reboot until the stock yellow smiley
+        returns as a signal to re-push. Blink, mouth and head position are all driven live as it talks.</p>
+        <p class="card__stack"><span>PSRAM push</span><span>set_blink / set_mouth</span></p>
+        <figure class="shot shot--inset" style="--ar:1/1">
+          <div class="shot__media">
+            <img src="/media/avatar-claude.jpg" alt="Claude's face rendered on the robot's screen" loading="lazy"
+                 onload="this.closest('.shot__media').classList.add('is-ready')">
+            <div class="shot__ph"><span class="shot__no">SHOT&nbsp;10</span><span class="shot__hint">Screen close-up — the Claude avatar face, eyes + mouth, filling the 2″ display</span></div>
+          </div>
+        </figure>
+      </article>
+
+      <!-- Motion -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">J</span><h3>Servo motion &amp; presence</h3></div>
+        <p>Two servos give a neck. While thinking or speaking the head makes small active glances;
+        at rest it idles with a random glance every 15–40 seconds — unless the screen is dimmed or
+        it's night. How much it moves (Never / While awake / Always) is a panel setting that takes
+        effect on the next glance, no restart.</p>
+        <p class="card__stack"><span>yaw + pitch</span><span>idle wander</span><span>night-aware</span></p>
+      </article>
+
+      <!-- Panel -->
+      <article class="card" data-reveal>
+        <div class="card__head"><span class="card__num">K</span><h3>The control panel</h3></div>
+        <p>Everything above is configured from one local Flask web app — 15+ tabs for devices, people,
+        documents, each watcher, night hours, motion and volume, plus a read-only troubleshooting tab
+        with a dozen diagnostics. It runs detached, so it survives closing the terminal, and it's the
+        <b>only</b> place identity-sensitive things (faces, email addresses, reminders) can be set.</p>
+        <p class="card__stack"><span>Flask</span><span>15+ tabs</span><span>detached · nohup</span></p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================ STACK ============================ -->
+<section id="stack" class="section" data-reveal>
+  <div class="wrap">
+    <p class="eyebrow">05 — Under the hood</p>
+    <h2 class="h2">The stack, top to bottom</h2>
+    <div class="stackgrid">
+      <div class="stackcol">
+        <h4>On the device</h4>
+        <ul>
+          <li>ESP32-S3 firmware — open <code>stackchan-mcp</code> v1.16.0</li>
+          <li>Opus audio over WebSocket</li>
+          <li>NVS-stored local gateway URL + token (mDNS off)</li>
+          <li>Factory image backed up before flashing</li>
+        </ul>
+      </div>
+      <div class="stackcol">
+        <h4>The brain &amp; voice</h4>
+        <ul>
+          <li>Claude, driven over MCP (<code>claude -p</code>)</li>
+          <li><code>faster-whisper</code> — local speech-to-text</li>
+          <li><code>edge-tts</code> / VOICEVOX — swappable TTS</li>
+          <li>OpenCV DNN — YuNet + SFace for faces</li>
+        </ul>
+      </div>
+      <div class="stackcol">
+        <h4>The server</h4>
+        <ul>
+          <li>Python MCP server — <code>mcp</code>, plain &amp; debuggable</li>
+          <li><code>httpx</code>, <code>websockets</code>, <code>python-dotenv</code></li>
+          <li><code>pypdf</code> + <code>Pillow</code> (RAQM) for documents</li>
+          <li>Adapter-per-source; stub mode when unconfigured</li>
+        </ul>
+      </div>
+      <div class="stackcol">
+        <h4>Integrations</h4>
+        <ul>
+          <li><code>caldav</code> · Gmail SMTP · <code>SoCo</code> (Sonos)</li>
+          <li>Hue CLIP v2 · <code>discord.py</code> · <code>yfinance</code></li>
+          <li>ESPN · NORAD/NASA · ADS-B · USGS/EONET · RSS</li>
+          <li>Every secret in a gitignored <code>.env</code></li>
+        </ul>
+      </div>
+    </div>
+    <p class="principle">
+      <b>A deliberate constraint:</b> plain, debuggable Python — no heavy agent frameworks. Every data
+      source is a small adapter that falls back to stub text when it isn't configured, so the whole
+      thing was testable before the hardware ever arrived, and any one piece can break without taking
+      the rest down.
+    </p>
+  </div>
+</section>
+
+<!-- ============================ STATUS ============================ -->
+<section id="status" class="section section--alt" data-reveal>
+  <div class="wrap">
+    <p class="eyebrow">06 — Where it stands</p>
+    <h2 class="h2">Working, honestly labelled</h2>
+    <p class="lead">This is a build log, not a product page. Here's what's real today, what's in progress,
+      and what's deliberately left for later.</p>
+
+    <div class="status">
+      <div class="status__col status__col--done">
+        <h3><span class="dot dot--green"></span>Working &amp; in use</h3>
+        <ul>
+          <li>Touch-to-talk voice, EN + <span lang="hi">हिंदी</span></li>
+          <li>Face recognition &amp; identity-gated email</li>
+          <li>Documents, including scanned-PDF reading</li>
+          <li>Hue lights &amp; Sonos room audio</li>
+          <li>iCloud calendar &amp; reminders</li>
+          <li>All six watchers (sport, space, news, flight, weather, markets)</li>
+          <li>Discord Minecraft alerts</li>
+          <li>Claude avatar, servo motion, night mode</li>
+          <li>15+ tab control panel</li>
+        </ul>
+      </div>
+      <div class="status__col status__col--wip">
+        <h3><span class="dot dot--amber"></span>In progress</h3>
+        <ul>
+          <li>Daily brief — outlook &amp; fixture lookahead tuning</li>
+          <li>Cricket schedule depth (cost-vs-benefit call)</li>
+          <li>Louder room audio (Grove Bluetooth speaker)</li>
+        </ul>
+      </div>
+      <div class="status__col status__col--todo">
+        <h3><span class="dot dot--grey"></span>Deferred</h3>
+        <ul>
+          <li>Home Assistant bridge (stub in place)</li>
+          <li>OneDrive digest ingestion</li>
+          <li>Always-on gateway on a home box (Stage 4)</li>
+          <li>Custom device-driving firmware</li>
+        </ul>
+      </div>
+    </div>
+
+    <details class="limits">
+      <summary>Known limitations — kept in plain sight</summary>
+      <ul>
+        <li><b>1&nbsp;W speaker</b> is quiet across a kitchen — a Grove Bluetooth speaker is the planned fix.</li>
+        <li><b>Two servos</b> mean limited expressiveness — a deliberate trade against a bulkier multi-servo robot.</li>
+        <li><b>mDNS is off</b> in this firmware, so the gateway IP is pinned; moving Macs means repointing the device.</li>
+        <li><b>Whisper's <em>small</em> model</b> takes ~2–3&nbsp;s to warm up on the first question, then is near-instant.</li>
+        <li><b>No wake word</b> — a touch is required. A feature, not a gap: it kills false triggers.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>
+      <p class="footer__brand">Sanjay Shukla</p>
+      <p class="footer__tag">Local-first AI, built at home with Claude.</p>
+    </div>
+    <div class="footer__links">
+      <a href="mailto:shuklz@gmail.com">shuklz@gmail.com</a>
+      <a href="https://github.com/shuklz" rel="noopener">GitHub</a>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </div>
+  <p class="footer__fine">Robo-Claude is a personal project. “Claude” is Anthropic's assistant; “M5Stack”, “Philips Hue”, “Sonos” and other names belong to their owners.</p>
+</footer>
+</div><!-- /.shell -->
+
+<!-- ============================ VIDEO MODAL ============================ -->
+<div class="modal" id="videoModal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__box" role="dialog" aria-modal="true" aria-label="Demo video">
+    <button class="modal__x" data-close aria-label="Close">✕</button>
+    <div class="modal__video" id="videoMount">
+      <div class="modal__soon">
+        <p class="modal__soon-k">SHOT&nbsp;11 · Demo film</p>
+        <p>The walkthrough video isn't embedded yet. Drop your YouTube/Vimeo ID into <code>app.js</code>
+           (see <code>VIDEO_ID</code>) and it plays right here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js?v=1" defer></script>
+</body>
+</html>
