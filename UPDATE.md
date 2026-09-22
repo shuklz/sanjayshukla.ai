@@ -39,12 +39,26 @@ Change a file, refresh the browser. When it looks right, publish.
 > `media/` is what actually ships. **Redact anything private in screenshots first** —
 > this page is public.
 
-## Add the demo video
+## Add / replace the demo video (self-hosted — no YouTube needed)
 
-1. Upload the clip to YouTube or Vimeo.
-2. Open **`app.js`**, set `VIDEO_ID` to the video's ID (and `VIDEO_HOST` to
-   `'youtube'` or `'vimeo'`). Bump `?v=1` → `?v=2` on the `app.js` line in `index.html`.
-3. `./publish.sh`. The "Watch the demo" button now plays it in a pop-up.
+The site plays its own clip — no third-party embed, in keeping with the
+local-first theme.
+
+1. Record the clip (phone/screen-record is fine). Drop the raw file into
+   **`originals/`** named **`robo-claude-demo.mov`** (or `.mp4`). Big raw files are
+   fine here — `originals/` never leaves your Mac.
+2. `./publish.sh`. `build.sh` shrinks it to a lean, web-ready
+   `media/robo-claude-demo.mp4` (+ a poster frame) and ships only that. The
+   153 MB raw becomes ~8 MB. The "Watch the demo" button plays it in a pop-up.
+3. If you re-record, overwrite the file in `originals/` and publish again — the
+   encoder re-runs whenever the raw file is newer than the built `.mp4`.
+
+> Encoding needs **ffmpeg** (already installed on this Mac). On a Mac without it,
+> `build.sh` skips the video step and says so — the rest of the build still works.
+
+**Prefer YouTube/Vimeo instead?** Open **`app.js`**, clear `VIDEO_FILE = ''`, set
+`VIDEO_ID` (and `VIDEO_HOST` to `'youtube'`/`'vimeo'`), bump the `app.js` `?v=N` in
+`index.html`, then `./publish.sh`.
 
 ## Change the words
 
@@ -116,3 +130,4 @@ whatever is on `main`.
 | Site not updating | `git status` — did `publish.sh` push? GitHub Pages can take a minute. |
 | HTTPS/cert stuck or "not secure" | Check DNS isn't broken by a stray **DNSSEC** record: `dig @8.8.8.8 sanjayshukla.ai A \| grep status:` — `SERVFAIL` means remove the orphaned DS record at the registrar. (This exact thing bit `.art`.) |
 | `sips: command not found` | You're not on macOS. `build.sh` needs the built-in macOS `sips`. |
+| Video didn't encode / update | Needs `ffmpeg`. Check the raw file is in `originals/` and newer than `media/robo-claude-demo.mp4`; re-run `./publish.sh`. |

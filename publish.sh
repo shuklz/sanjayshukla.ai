@@ -21,7 +21,7 @@ echo "→ optimising media…"
 
 echo "→ staging…"
 # Explicit list of everything we publish, then pick up edits to already-tracked files.
-git add index.html styles.css app.js favicon.svg CNAME robots.txt .nojekyll \
+git add index.html styles.css app.js favicon.svg CNAME robots.txt .nojekyll .gitignore \
         build.sh publish.sh UPDATE.md SHOTLIST.md CLAUDE.md 2>/dev/null || true
 git add media/ 2>/dev/null || true
 git add -u

@@ -64,4 +64,49 @@ for src in "$SRC"/*.jpg "$SRC"/*.jpeg "$SRC"/*.png "$SRC"/*.heic; do
 done
 shopt -u nullglob nocaseglob
 
+# ---------------------------------------------------------------------------
+# Video: originals/*.mov|*.mp4  ->  media/<slug>.mp4 (web-optimised) + poster.
+# Self-hosted demo clips. Needs ffmpeg; if it's missing we skip cleanly so the
+# image build still works on a Mac without it (raw video stays in originals/,
+# which is gitignored, so nothing huge ever gets committed).
+# ---------------------------------------------------------------------------
+VID_MAX=1080      # longest edge, px
+VID_CRF=26        # H.264 quality (lower = better/bigger)
+
+if command -v ffmpeg >/dev/null 2>&1; then
+  vbuilt=0; vskipped=0
+  shopt -s nullglob nocaseglob
+  for src in "$SRC"/*.mov "$SRC"/*.mp4 "$SRC"/*.m4v; do
+    [[ -e "$src" ]] || continue
+    base="$(basename "$src")"; stem="${base%.*}"
+    slug="$(kebab "$stem")"
+    out="$OUT/$slug.mp4"
+    poster="$OUT/$slug-poster.jpg"
+
+    if [[ -f "$out" && "$out" -nt "$src" ]]; then
+      vskipped=$((vskipped+1)); continue
+    fi
+
+    # Fit inside VID_MAX×VID_MAX, never upscale, keep dims even for H.264.
+    scale="scale='min($VID_MAX,iw)':'min($VID_MAX,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2"
+    ffmpeg -y -loglevel error -i "$src" \
+      -vf "$scale" \
+      -c:v libx264 -crf "$VID_CRF" -preset slow -pix_fmt yuv420p -movflags +faststart \
+      -c:a aac -b:a 128k \
+      "$out"
+    # Poster frame (~2s in) for the video's loading state.
+    ffmpeg -y -loglevel error -ss 2 -i "$src" -frames:v 1 \
+      -vf "$scale" -q:v 3 "$poster" 2>/dev/null || true
+    printf '  + %s -> %s (%s)\n' "$base" "$out" "$(du -h "$out" | cut -f1 | tr -d ' ')"
+    vbuilt=$((vbuilt+1))
+  done
+  shopt -u nullglob nocaseglob
+  [[ $((vbuilt+vskipped)) -gt 0 ]] && echo "build: video — $vbuilt encoded, $vskipped up-to-date."
+else
+  # Only nag if there's actually a video waiting to be processed.
+  if compgen -G "$SRC"/*.mov >/dev/null 2>&1 || compgen -G "$SRC"/*.mp4 >/dev/null 2>&1; then
+    echo "build: ffmpeg not found — leaving raw video in $SRC/ (install ffmpeg to encode it)."
+  fi
+fi
+
 echo "build: $built optimised, $skipped up-to-date. Output in $OUT/"

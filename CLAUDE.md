@@ -213,30 +213,37 @@ heavy on screenshots, `.art`'s simpler GitHub Pages flow is fine.)
 - **Access:** Public, but **noindex** (`robots.txt` `Disallow: /` + meta tag) until
   ready to be discoverable. To go search-visible: remove the noindex `<meta>` in
   `index.html` and flip `robots.txt` (documented in `UPDATE.md`).
-- **Video:** External embed — paste a YouTube/Vimeo ID into `app.js` (`VIDEO_ID`).
+- **Video:** **Self-hosted** (updated 2026-09-22) — local-first, no third-party embed.
+  Raw clip lives in `originals/` (gitignored); `build.sh` encodes it to a lean
+  `media/robo-claude-demo.mp4` (+ poster) that ships in-repo. `app.js` `VIDEO_FILE`
+  plays it in the modal. YouTube/Vimeo (`VIDEO_ID`) still supported as a fallback.
 - **Stack:** Hand-authored **vanilla HTML/CSS/JS**, no framework. Only “build” is
-  `build.sh` (macOS `sips` image optimise; never upscales; kebab-cases names).
+  `build.sh` (macOS `sips` image optimise + `ffmpeg` video encode, both guarded;
+  never upscales; kebab-cases names).
 
 **Directory structure:**
 ```
 sanjayshukla.ai/
   index.html      hand-authored single page (the showcase)
   styles.css      design system (dark + gold family; bump ?v=N to cache-bust)
-  app.js          rail drawer, scroll-reveal, active-section, video modal
+  app.js          rail drawer, scroll-reveal, active-section, video modal (self-hosted mp4)
   favicon.svg
   CNAME           sanjayshukla.ai
   robots.txt      Disallow: /  (noindex for now)
   .nojekyll       serve files verbatim (no Jekyll)
-  build.sh        originals/ -> media/   (sips optimise)
+  build.sh        originals/ -> media/   (sips images + ffmpeg video -> mp4 + poster)
   publish.sh      build -> stage (explicit list + git add -u) -> commit -> push
   UPDATE.md       plain-English manual for Sanjay
   SHOTLIST.md     per-slot media capture guide
-  media/          COMMITTED optimised images (hero.jpg, device.jpg, before-activation.jpg, …)
-  originals/      GITIGNORED raw drops (name to match SHOTLIST, then ./publish.sh)
+  media/          COMMITTED optimised images (hero.jpg, at-home-1/2.jpg, device.jpg, …)
+                  + robo-claude-demo.mp4 (~8MB) + robo-claude-demo-poster.jpg
+  originals/      GITIGNORED raw drops — photos AND raw video (robo-claude-demo.mov,
+                  153MB) live here; build.sh turns them into the committed media/
 ```
 
 **Page sections:** left AI-Projects rail + on-this-page nav · cinematic hero
-(desk shot: robot + Mac running Claude) · “What is an M5StackChan” (hardware) ·
+(smaller "boxed" desk shot + a two-up at-home photo gallery; hero shot capped at
+~820px, no longer full-bleed) · “What is an M5StackChan” (hardware) ·
 “Open by design, local by choice” (open-source framing, before/after, stage
 timeline) · architecture flow + ports · 11 subsystem cards · stack · status/roadmap.
 Media slots degrade to styled placeholders until real files land in `originals/`.
@@ -259,8 +266,21 @@ git pull                          # two-Mac: pull first
 Pages served from `main` root; `CNAME` = `sanjayshukla.ai`. Per-repo git identity
 `shuklz@gmail.com` / “Sanjay Shukla”.
 
-**Remaining for Sanjay:**
-1. Supply the rest of the media — SHOTLIST slots **04–11** + the demo video.
-2. Point apex DNS `A` records at the GitHub Pages IPs (185.199.108–111.153) if not
-   already; watch the DNSSEC `SERVFAIL` trap noted above.
+**Remaining / next (Sanjay):**
+1. **Media redo — partly done (2026-09-22).** Hero shot kept but shrunk to a boxed
+   frame; added two fresh at-home photos (`media/at-home-1.jpg`, `at-home-2.jpg`) as
+   a two-up gallery in the hero. Still wanted: better `device.jpg` /
+   `before-activation.jpg` and SHOTLIST slots 04–11 (keep the same filenames so they
+   drop straight in).
+2. **Demo video — DONE & live (2026-09-22).** An 82s clip is self-hosted at
+   `media/robo-claude-demo.mp4` (153MB `.mov` → ~8MB via `build.sh`/ffmpeg) and plays
+   in the hero “Watch the demo” modal. To swap it: overwrite
+   `originals/robo-claude-demo.mov` and `./publish.sh`. (Future nice-to-have: reshoot
+   as the “Hey Robo-Claude, introduce yourself” birth/rebirth/developments arc,
+   ending on a *live* action — turn on a Hue light — and a Hindi line for EN·हिंदी.)
 3. Flip **noindex** when ready to be found on Google.
+
+**Done since launch (2026-09-17):** DNS live (name.com — 4 apex `A` records →
+185.199.108–111.153 + `www` CNAME → `shuklz.github.io`); site serving at
+http://sanjayshukla.ai/; HTTPS cert auto-provisioning (turn on **Enforce HTTPS**
+once issued).

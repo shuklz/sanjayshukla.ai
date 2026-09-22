@@ -3,9 +3,14 @@
   'use strict';
 
   // ---- Demo video ---------------------------------------------------------
-  // Paste a YouTube or Vimeo ID here and the "Watch the demo" button plays it.
-  //   YouTube:  VIDEO_ID = 'dQw4w9WgXcQ',  VIDEO_HOST = 'youtube'
-  //   Vimeo:    VIDEO_ID = '76979871',     VIDEO_HOST = 'vimeo'
+  // Self-hosted clip is the default (local-first — no third-party embed).
+  // To use YouTube/Vimeo instead, clear VIDEO_FILE and set VIDEO_ID/VIDEO_HOST.
+  //   Self-host: VIDEO_FILE = '/media/robo-claude-demo.mp4'
+  //   YouTube:   VIDEO_ID = 'dQw4w9WgXcQ',  VIDEO_HOST = 'youtube'
+  //   Vimeo:     VIDEO_ID = '76979871',     VIDEO_HOST = 'vimeo'
+  var VIDEO_FILE = '/media/robo-claude-demo.mp4';
+  var VIDEO_POSTER = '/media/robo-claude-demo-poster.jpg';
+  var VIDEO_SQUARE = true;   // the demo clip is 1:1; give the modal a square frame
   var VIDEO_ID = '';
   var VIDEO_HOST = 'youtube';
 
@@ -78,9 +83,19 @@
   }
   function openModal() {
     if (!modal) return;
-    var src = embedSrc();
-    if (src) {
-      mount.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+    var box = $('.modal__box', modal);
+    if (VIDEO_FILE) {
+      if (box && VIDEO_SQUARE) box.classList.add('modal__box--square');
+      mount.innerHTML =
+        '<video controls autoplay playsinline preload="metadata" poster="' + VIDEO_POSTER + '">' +
+        '<source src="' + VIDEO_FILE + '" type="video/mp4">' +
+        'Your browser can’t play this clip. <a href="' + VIDEO_FILE + '">Download it</a>.' +
+        '</video>';
+    } else {
+      var src = embedSrc();
+      if (src) {
+        mount.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+      }
     }
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -89,8 +104,11 @@
     if (!modal) return;
     modal.hidden = true;
     document.body.style.overflow = '';
-    var f = $('iframe', mount);
-    if (f) f.remove(); // stop playback
+    var v = $('video', mount);
+    if (v) { try { v.pause(); } catch (e) {} }
+    mount.innerHTML = ''; // stop playback (iframe or video)
+    var box = $('.modal__box', modal);
+    if (box) box.classList.remove('modal__box--square');
   }
   $$('[data-video]').forEach(function (b) { b.addEventListener('click', openModal); });
   if (modal) {

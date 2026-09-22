@@ -20,7 +20,7 @@
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="canonical" href="https://sanjayshukla.ai/">
-<link rel="stylesheet" href="/styles.css?v=1">
+<link rel="stylesheet" href="/styles.css?v=2">
 </head>
 
 <body>
@@ -118,13 +118,33 @@
     </dl>
   </div>
 
-  <figure class="hero__shot shot" style="--ar:4/3">
-    <div class="shot__media">
-      <img src="/media/hero.jpg" alt="Robo-Claude, the customised M5Stack desktop robot, at home" loading="eager"
-           onload="this.closest('.shot__media').classList.add('is-ready')">
-      <div class="shot__ph"><span class="shot__no">SHOT&nbsp;01</span><span class="shot__hint">Hero — the robot on its shelf, ¾ angle, Claude face on screen, warm low light</span></div>
+  <div class="hero__media">
+    <figure class="hero__shot shot" style="--ar:4/3">
+      <div class="shot__media">
+        <img src="/media/hero.jpg" alt="Robo-Claude, the customised M5Stack desktop robot, on the desk beside the Mac that hosts its brain" loading="eager"
+             onload="this.closest('.shot__media').classList.add('is-ready')">
+        <div class="shot__ph"><span class="shot__no">SHOT&nbsp;01</span><span class="shot__hint">Hero — the robot on its shelf, ¾ angle, Claude face on screen, warm low light</span></div>
+      </div>
+    </figure>
+
+    <div class="hero__gallery">
+      <figure class="shot shot--frame" style="--ar:3/4">
+        <div class="shot__media">
+          <img src="/media/at-home-1.jpg" alt="Robo-Claude at home beside a warm lamp, Claude's face lit blue on its screen" loading="lazy"
+               onload="this.closest('.shot__media').classList.add('is-ready')">
+          <div class="shot__ph"><span class="shot__no">AT&nbsp;HOME</span><span class="shot__hint">Evening light, by the lamp</span></div>
+        </div>
+      </figure>
+      <figure class="shot shot--frame" style="--ar:3/4">
+        <div class="shot__media">
+          <img src="/media/at-home-2.jpg" alt="Robo-Claude on the table at home, its Claude face glowing in the evening" loading="lazy"
+               onload="this.closest('.shot__media').classList.add('is-ready')">
+          <div class="shot__ph"><span class="shot__no">AT&nbsp;HOME</span><span class="shot__hint">On the table, evening</span></div>
+        </div>
+      </figure>
     </div>
-  </figure>
+    <p class="hero__gallery-cap">At home, running locally — no cloud in the loop.</p>
+  </div>
 
   <a class="hero__scroll" href="#what" aria-label="Scroll to overview"><span></span></a>
 </section>
@@ -675,14 +695,14 @@
     <button class="modal__x" data-close aria-label="Close">✕</button>
     <div class="modal__video" id="videoMount">
       <div class="modal__soon">
-        <p class="modal__soon-k">SHOT&nbsp;11 · Demo film</p>
-        <p>The walkthrough video isn't embedded yet. Drop your YouTube/Vimeo ID into <code>app.js</code>
-           (see <code>VIDEO_ID</code>) and it plays right here.</p>
+        <p class="modal__soon-k">Demo film</p>
+        <p>Loading the walkthrough… if it doesn't play,
+           <a href="/media/robo-claude-demo.mp4">open the clip directly</a>.</p>
       </div>
     </div>
   </div>
 </div>
 
-<script src="/app.js?v=1" defer></script>
+<script src="/app.js?v=2" defer></script>
 </body>
 </html>

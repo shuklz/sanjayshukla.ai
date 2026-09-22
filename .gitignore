@@ -1,0 +1,16 @@
+# Raw, unoptimised media drops — never leave the Mac. build.sh turns these
+# into optimised files under media/ (which IS committed).
+originals/
+
+# macOS noise
+.DS_Store
+._*
+
+# Editor / tooling
+.vscode/
+.idea/
+.claude/
+
+# Local scratch
+*.log
+tmp/
